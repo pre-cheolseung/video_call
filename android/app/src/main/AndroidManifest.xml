@@ -1,4 +1,32 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.video_call">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!-- CAMERA 권한을 선언하면 기본적으로 카메라 하드웨어가 필수인 것으로 간주 -->
+    <!-- Google Play 스토어에서 카메라가 없는 기기의 설치를 자동으로 차단 -->
+    <!-- 카메라가 없어도 앱을 설치할 수 있게 android:required="false"로 설정 -->
+    <!-- 카메라 앱처럼 카메라 하드웨어가 필수라면 android:required="true"로 명시 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Android 12 (API 32) 이하용 -->
+    <!-- Android 13 (API 33) 이상을 타겟팅하는 앱에서는 아래와 같은 세분화된 미디어 권한을 사용 -->
+    <!-- READ_MEDIA_IMAGES -->
+    <!-- READ_MEDIA_VIDEO -->
+    <!-- READ_MEDIA_AUDIO -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
         android:label="video_call"
         android:name="${applicationName}"
