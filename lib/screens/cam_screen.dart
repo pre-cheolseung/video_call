@@ -30,8 +30,33 @@ class _CamScreenState extends State<CamScreen> {
       appBar: AppBar(
         title: const Text('LIVE'),
       ),
-      body: Center(
-        child: const Text('Cam Screen'),
+      // Future 값을 기반으로 위젯 렌더링
+      body: FutureBuilder(
+        future: init(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          // Future 실행 후 에러가 있을 경우
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                snapshot.error.toString(),
+              ),
+            );
+          }
+
+          // Future 실행 후 아직 데이터가 없을 경우 (로딩 중)
+          if (!snapshot.hasData) {
+            return Center(
+              child: const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCDB3FF)),   // 색상 지정
+              ),
+            );
+          }
+
+          // 나머지 상황에 권한 있음을 표시
+          return Center(
+            child: const Text('You have full authority!'),
+          );
+        }
       ),
     );
   }
