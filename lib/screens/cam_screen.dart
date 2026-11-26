@@ -109,7 +109,11 @@ class _CamScreenState extends State<CamScreen> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text('Leave Channel'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+                  child: Text(
+                    'Leave Channel',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

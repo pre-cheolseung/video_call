@@ -17,7 +17,11 @@ class EntryButton extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: onTap,
-          child: const Text('Enter'),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+          child: const Text(
+            'Enter',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
