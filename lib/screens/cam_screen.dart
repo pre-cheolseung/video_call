@@ -143,17 +143,37 @@ class _CamScreenState extends State<CamScreen> {
             );
           }
 
-          return Stack(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              renderMainView(),   // 상대방이 찍는 화면
-              // 내가 찍는 화면
-              Align(
-                alignment: Alignment.topLeft,   // 좌측 상단에 위치
-                child: Container(
-                  color: Colors.grey,
-                  height: 160,
-                  width: 120,
-                  child: renderSubView(),
+              Expanded(
+                child: Stack(
+                  children: [
+                    renderMainView(),   // 상대방이 찍는 화면
+                    // 내가 찍는 화면
+                    Align(
+                      alignment: Alignment.topLeft,   // 좌측 상단에 위치
+                      child: Container(
+                        color: Colors.grey,
+                        height: 160,
+                        width: 120,
+                        child: renderSubView(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (engine != null) {
+                      await engine!.leaveChannel();
+                    }
+
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Leave Channel'),
                 ),
               ),
             ],
