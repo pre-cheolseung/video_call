@@ -143,9 +143,20 @@ class _CamScreenState extends State<CamScreen> {
             );
           }
 
-          // 나머지 상황에 권한 있음을 표시
-          return Center(
-            child: const Text('You have full authority!'),
+          return Stack(
+            children: [
+              renderMainView(),   // 상대방이 찍는 화면
+              // 내가 찍는 화면
+              Align(
+                alignment: Alignment.topLeft,   // 좌측 상단에 위치
+                child: Container(
+                  color: Colors.grey,
+                  height: 160,
+                  width: 120,
+                  child: renderSubView(),
+                ),
+              ),
+            ],
           );
         }
       ),
