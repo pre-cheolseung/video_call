@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(child: Logo()),   // 로고
-              Expanded(child: Image()),   // 중앙 이미지
+              Expanded(child: LogoImage()),   // 중앙 이미지
               Expanded(child: EntryButton()),   // 화상 통화 시작 버튼
             ],
           ),
