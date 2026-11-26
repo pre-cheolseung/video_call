@@ -151,4 +151,46 @@ class _CamScreenState extends State<CamScreen> {
       ),
     );
   }
+
+  // 내 휴대폰이 찍는 화면 렌더링
+  Widget renderSubView() {
+    if (uid != null) {
+      // 동영상을 화면에 보여주는 위젯
+      return AgoraVideoView(
+        // 동영상 정보를 AgoraVideoView 위젯을 통해 보여주는 것이 가능
+        controller: VideoViewController(
+          rtcEngine: engine!,
+          canvas: const VideoCanvas(uid: 0),   // 내 영상을 보여주기 위해 0 입력
+        ),
+      );
+    // 내가 아직 채널에 접속하지 않았다면 로딩 화면
+    } else {
+      return const CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCDB3FF)),   // 색상 지정
+      );
+    }
+  }
+
+  // 상대 휴대폰이 찍는 화면 렌더링
+  Widget renderMainView() {
+    if (otherUid != null) {
+      // 동영상을 화면에 보여주는 위젯
+      return AgoraVideoView(
+        // 상대방 동영상 정보를 AgoraVideoView 위젯을 통해 보여주는 것이 가능
+        controller: VideoViewController.remote(
+          rtcEngine: engine!,
+          canvas: VideoCanvas(uid: otherUid),   // 상대방 영상을 보여주기 위해 otherUid 입력
+          connection : const RtcConnection(channelId: CHANNEL_NAME),
+        ),
+      );
+    // 상대가 아직 채널에 접속하지 않았다면 대기 메시지
+    } else {
+      return Center(
+        child: const Text(
+          'Please wait until another user joins.',
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+  }
 }
