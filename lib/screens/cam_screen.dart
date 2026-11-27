@@ -16,6 +16,7 @@ class CamScreen extends StatefulWidget {
 class _CamScreenState extends State<CamScreen> {
   late final AgoraService _agoraService;
   late final Future<bool> _initFuture;
+  bool _isSwapped = false;   // 화면 전환 여부 (true : 내가 메인, false : 상대방이 메인)
 
   @override
   void initState() {
@@ -108,57 +109,43 @@ class _CamScreenState extends State<CamScreen> {
             );
           }
 
+          // 내 화면 위젯 정의
+          final Widget localView = LocalVideoView(
+            engine: _agoraService.engine!,
+            uid: _agoraService.uid,
+            isAudioMuted: _agoraService.isAudioMuted,   // 상태 전달
+            isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
+          );
+
+          // 상대방 화면 위젯 정의
+          final Widget remoteView = RemoteVideoView(
+            engine: _agoraService.engine!,
+            otherUid: _agoraService.otherUid,
+            isRemoteAudioMuted: _agoraService.isRemoteAudioMuted,   // 상태 전달
+            isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
+          );
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: Stack(
                   children: [
-                    // 상대방 화면 위젯
-                    RemoteVideoView(
-                      engine: _agoraService.engine!,
-                      otherUid: _agoraService.otherUid,
-                      isRemoteAudioMuted: _agoraService.isRemoteAudioMuted,   // 상태 전달
-                      isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
-                    ),
-                    // 내 화면 위젯 (좌측 상단 PIP 스타일)
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        // 화면 가장자리에서 살짝 띄워 답답하지 않게 배치
-                        padding: const EdgeInsets.only(top: 12.0, left: 12.0),
-                        child: Container(
-                          height: 160,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(14),
-                            // 테두리 추가
-                            border: Border.all(
-                              color: Colors.white70,
-                              width: 2.0,
-                            ),
-                            // 입체감을 위한 은은한 그림자
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black38,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          // 테두리 두께만큼 안쪽 모서리를 둥글게 잘라 영상이 삐져나오지 않게 처리
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: LocalVideoView(
-                              engine: _agoraService.engine!,
-                              uid: _agoraService.uid,
-                              isAudioMuted: _agoraService.isAudioMuted,   // 상태 전달
-                              isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
-                            ),
-                          ),
-                        ),
-                      ),
+                    // 전체 메인 화면 (_isSwapped가 true면 내 화면, false면 상대방 화면)
+                    _isSwapped ? localView : remoteView,
+
+                    // 드래그 및 탭 가능한 작은 화면 (탭하면 _isSwapped 반전)
+                    DraggablePipView(
+                      onTap: () {
+                        // 상태 변경 시 setState() 함수 실행
+                        // 값 변경 시 build() 함수 재실행
+                        // Clean -> setState() -> Dirty -> build() -> Clean
+                        setState(() {
+                          _isSwapped = !_isSwapped;
+                        });
+                      },
+
+                      child: _isSwapped ? remoteView : localView,
                     ),
                   ],
                 ),
@@ -182,7 +169,7 @@ class _CamScreenState extends State<CamScreen> {
               ),
             ],
           );
-        }
+        },
       ),
     );
   }
