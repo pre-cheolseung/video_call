@@ -47,6 +47,42 @@ class _CamScreenState extends State<CamScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('LIVE'),
+        actions: [
+          // 1. 내 마이크 음소거 및 해제 버튼
+          IconButton(
+            onPressed: _agoraService.uid != null
+              ? () async {
+                  await _agoraService.toggleAudio();
+                }
+              : null,
+            icon: Icon(
+              _agoraService.isAudioMuted ? Icons.mic_off : Icons.mic,
+            ),
+            tooltip: _agoraService.isAudioMuted ? 'Unmute Microphone' : 'Mute Microphone',
+          ),
+          // 내 카메라 끄기 및 켜기 버튼
+          IconButton(
+            onPressed: _agoraService.uid != null
+              ? () async {
+                  await _agoraService.toggleVideo();
+                }
+              : null,
+            icon: Icon(
+              _agoraService.isVideoMuted ? Icons.videocam_off : Icons.videocam,
+            ),
+            tooltip: _agoraService.isVideoMuted ? 'Turn Camera On' : 'Turn Camera Off',
+          ),
+          // 전면 및 후면 카메라 전환 버튼 (엔진이 초기화되어 채널에 입장 후 카메라가 켜져 있을 때만 활성화)
+          IconButton(
+            onPressed: _agoraService.uid != null
+              ? () async {
+                  await _agoraService.switchCamera();
+                }
+              : null,
+            icon: const Icon(Icons.cameraswitch),
+            tooltip: 'Switch Camera',
+          ),
+        ],
       ),
       // Future 값을 기반으로 위젯 렌더링
       body: FutureBuilder<bool>(
@@ -82,8 +118,9 @@ class _CamScreenState extends State<CamScreen> {
                     RemoteVideoView(
                       engine: _agoraService.engine!,
                       otherUid: _agoraService.otherUid,
+                      isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
                     ),
-                    // 내 화면 위젯
+                    // 내 화면 위젯 (좌측 상단)
                     Align(
                       alignment: Alignment.topLeft,
                       child: Container(
@@ -93,6 +130,7 @@ class _CamScreenState extends State<CamScreen> {
                         child: LocalVideoView(
                           engine: _agoraService.engine!,
                           uid: _agoraService.uid,
+                          isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
                         ),
                       ),
                     ),

@@ -9,6 +9,9 @@ class AgoraService {
   RtcEngine? engine;   // 아고라 엔진을 저장할 변수
   int? uid;   // 내 ID
   int? otherUid;   // 상대방 ID
+  bool isAudioMuted = false;   // 내 마이크 음소거 상태 (Default : 켜짐)
+  bool isVideoMuted = false;   // 내 카메라 끄기 상태 (Default : 켜짐)
+  bool isRemoteVideoMuted = false;   // 상대방 카메라 끄기 상태 (Default : 켜짐)
 
   final VoidCallback onStateChanged;   // 상태 변경을 UI에 알리기 위한 콜백 (setState 역할)
 
@@ -41,15 +44,15 @@ class AgoraService {
           // elapsed : 실행 후 콜백이 실행되기까지 걸린 시간
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
             debugPrint('You have entered the channel. ID : ${connection.localUid}');
-
             uid = connection.localUid;
+
             onStateChanged();
           },
           // 채널에서 퇴장했을 경우
           onLeaveChannel: (RtcConnection connection, RtcStats stats) {
             debugPrint('Leave the channel.');
-
             uid = null;
+
             onStateChanged();
           },
           // 다른 사용자가 접속했을 경우
@@ -57,17 +60,31 @@ class AgoraService {
           // elapsed : 내가 채널을 들어왔을 때부터 상대가 들어올 때까지 걸린 시간
           onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
             debugPrint('The other person has entered the channel. ID : $remoteUid');
-
             otherUid = remoteUid;
+
+            isRemoteVideoMuted = false;   // 새 상대 입장 시 초기화
+
             onStateChanged();
           },
           // 다른 사용자가 채널에서 퇴장했을 경우
           // reason : 방에서 나가게 된 이유 (직접 퇴장 또는 네트워크 끊김 등)
           onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
             debugPrint('The other person left the channel. ID : $remoteUid');
-
             otherUid = null;
+
+            isRemoteVideoMuted = false;   // 상대 퇴장 시 초기화
+
             onStateChanged();
+          },
+          // 상대방이 비디오 송출을 끄거나 켰을 때 호출
+          onUserMuteVideo: (RtcConnection connection, int remoteUid, bool muted) {
+            debugPrint('Remote user ($remoteUid) video muted : $muted');
+
+            if (remoteUid == otherUid) {
+              isRemoteVideoMuted = muted;
+
+              onStateChanged();
+            }
           },
           // 에러가 발생했을 경우 (토큰 만료, 잘못된 App ID, 네트워크 문제 등)
           onError: (ErrorCodeType err, String msg) {
@@ -91,6 +108,38 @@ class AgoraService {
     }
 
     return true;
+  }
+
+  // 내 마이크 음소거 및 해제 토글
+  Future<void> toggleAudio() async {
+    if (engine != null) {
+      isAudioMuted = !isAudioMuted;
+
+      await engine!.muteLocalAudioStream(isAudioMuted);
+      debugPrint('Local audio muted: $isAudioMuted');
+
+      onStateChanged();
+    }
+  }
+
+  // 내 카메라 끄기 및 켜기 토글
+  Future<void> toggleVideo() async {
+    if (engine != null) {
+      isVideoMuted = !isVideoMuted;
+
+      await engine!.muteLocalVideoStream(isVideoMuted);
+      debugPrint('Local video muted: $isVideoMuted');
+
+      onStateChanged();   // 아이콘 모양과 내 화면 UI 갱신
+    }
+  }
+
+  // 전면 및 후면 카메라 전환
+  Future<void> switchCamera() async {
+    if (engine != null) {
+      await engine!.switchCamera();
+      debugPrint('Camera switched.');
+    }
   }
 
   Future<void> dispose() async {
