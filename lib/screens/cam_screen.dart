@@ -121,18 +121,42 @@ class _CamScreenState extends State<CamScreen> {
                       isRemoteAudioMuted: _agoraService.isRemoteAudioMuted,   // 상태 전달
                       isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
                     ),
-                    // 내 화면 위젯 (좌측 상단)
+                    // 내 화면 위젯 (좌측 상단 PIP 스타일)
                     Align(
                       alignment: Alignment.topLeft,
-                      child: Container(
-                        color: Colors.grey,
-                        height: 160,
-                        width: 120,
-                        child: LocalVideoView(
-                          engine: _agoraService.engine!,
-                          uid: _agoraService.uid,
-                          isAudioMuted: _agoraService.isAudioMuted,   // 상태 전달
-                          isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
+                      child: Padding(
+                        // 화면 가장자리에서 살짝 띄워 답답하지 않게 배치
+                        padding: const EdgeInsets.only(top: 12.0, left: 12.0),
+                        child: Container(
+                          height: 160,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(14),
+                            // 테두리 추가
+                            border: Border.all(
+                              color: Colors.white70,
+                              width: 2.0,
+                            ),
+                            // 입체감을 위한 은은한 그림자
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black38,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          // 테두리 두께만큼 안쪽 모서리를 둥글게 잘라 영상이 삐져나오지 않게 처리
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: LocalVideoView(
+                              engine: _agoraService.engine!,
+                              uid: _agoraService.uid,
+                              isAudioMuted: _agoraService.isAudioMuted,   // 상태 전달
+                              isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
+                            ),
+                          ),
                         ),
                       ),
                     ),
