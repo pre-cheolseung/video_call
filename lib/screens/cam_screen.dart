@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:video_call/services/agora_service.dart';
-import 'package:video_call/widgets/video_views.dart';
+import 'package:video_call/widgets/draggable_pip_view.dart';
+import 'package:video_call/widgets/local_video_view.dart';
+import 'package:video_call/widgets/remote_video_view.dart';
 
 class CamScreen extends StatefulWidget {
   final String channelName;   // 방 이름
