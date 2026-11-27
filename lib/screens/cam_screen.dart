@@ -118,6 +118,7 @@ class _CamScreenState extends State<CamScreen> {
                     RemoteVideoView(
                       engine: _agoraService.engine!,
                       otherUid: _agoraService.otherUid,
+                      isRemoteAudioMuted: _agoraService.isRemoteAudioMuted,   // 상태 전달
                       isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
                     ),
                     // 내 화면 위젯 (좌측 상단)
@@ -130,6 +131,7 @@ class _CamScreenState extends State<CamScreen> {
                         child: LocalVideoView(
                           engine: _agoraService.engine!,
                           uid: _agoraService.uid,
+                          isAudioMuted: _agoraService.isAudioMuted,   // 상태 전달
                           isVideoMuted: _agoraService.isVideoMuted,   // 상태 전달
                         ),
                       ),

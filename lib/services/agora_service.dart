@@ -11,6 +11,7 @@ class AgoraService {
   int? otherUid;   // 상대방 ID
   bool isAudioMuted = false;   // 내 마이크 음소거 상태 (Default : 켜짐)
   bool isVideoMuted = false;   // 내 카메라 끄기 상태 (Default : 켜짐)
+  bool isRemoteAudioMuted = false;   // 상대방 마이크 음소거 상태 (Default : 켜짐)
   bool isRemoteVideoMuted = false;   // 상대방 카메라 끄기 상태 (Default : 켜짐)
 
   final VoidCallback onStateChanged;   // 상태 변경을 UI에 알리기 위한 콜백 (setState 역할)
@@ -62,7 +63,9 @@ class AgoraService {
             debugPrint('The other person has entered the channel. ID : $remoteUid');
             otherUid = remoteUid;
 
-            isRemoteVideoMuted = false;   // 새 상대 입장 시 초기화
+            // 새 상대 입장 시 초기화
+            isRemoteAudioMuted = false;
+            isRemoteVideoMuted = false;
 
             onStateChanged();
           },
@@ -72,9 +75,21 @@ class AgoraService {
             debugPrint('The other person left the channel. ID : $remoteUid');
             otherUid = null;
 
-            isRemoteVideoMuted = false;   // 상대 퇴장 시 초기화
+            // 상대 퇴장 시 초기화
+            isRemoteAudioMuted = false;
+            isRemoteVideoMuted = false;
 
             onStateChanged();
+          },
+          // 상대방이 마이크를 음소거하거나 해제했을 때 호출
+          onUserMuteAudio: (RtcConnection connection, int remoteUid, bool muted) {
+            debugPrint('Remote user ($remoteUid) audio muted : $muted');
+
+            if (remoteUid == otherUid) {
+              isRemoteAudioMuted = muted;
+
+              onStateChanged();
+            }
           },
           // 상대방이 비디오 송출을 끄거나 켰을 때 호출
           onUserMuteVideo: (RtcConnection connection, int remoteUid, bool muted) {
