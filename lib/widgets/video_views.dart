@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:video_call/consts/agora.dart';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
 // 내 화면 (좌측 상단 작은 화면)
@@ -81,6 +79,7 @@ class LocalVideoView extends StatelessWidget {
 // 상대방 화면 (전체 메인 화면)
 class RemoteVideoView extends StatelessWidget {
   final RtcEngine engine;
+  final String channelName;   // 방 이름
   final int? otherUid;
   final bool isRemoteAudioMuted;   // 상대방 마이크 음소거 상태
   final bool isRemoteVideoMuted;   // 상대방 카메라 꺼짐 상태
@@ -89,6 +88,7 @@ class RemoteVideoView extends StatelessWidget {
     super.key,
 
     required this.engine,
+    required this.channelName,
     required this.otherUid,
     required this.isRemoteAudioMuted,
     required this.isRemoteVideoMuted,
@@ -129,7 +129,7 @@ class RemoteVideoView extends StatelessWidget {
               controller: VideoViewController.remote(
                 rtcEngine: engine,
                 canvas: VideoCanvas(uid: otherUid),   // 상대방 영상을 보여주기 위해 otherUid 입력
-                connection: const RtcConnection(channelId: CHANNEL_NAME),
+                connection: RtcConnection(channelId: channelName),   // 전달받은 channelName 적용
               ),
             ),
 

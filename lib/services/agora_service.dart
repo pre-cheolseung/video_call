@@ -9,14 +9,19 @@ class AgoraService {
   RtcEngine? engine;   // 아고라 엔진을 저장할 변수
   int? uid;   // 내 ID
   int? otherUid;   // 상대방 ID
+
   bool isAudioMuted = false;   // 내 마이크 음소거 상태 (Default : 켜짐)
   bool isVideoMuted = false;   // 내 카메라 끄기 상태 (Default : 켜짐)
   bool isRemoteAudioMuted = false;   // 상대방 마이크 음소거 상태 (Default : 켜짐)
   bool isRemoteVideoMuted = false;   // 상대방 카메라 끄기 상태 (Default : 켜짐)
 
+  final String channelName; // 전달받을 방 이름
   final VoidCallback onStateChanged;   // 상태 변경을 UI에 알리기 위한 콜백 (setState 역할)
 
-  AgoraService({required this.onStateChanged});
+  AgoraService({
+    required this.channelName,
+    required this.onStateChanged
+  });
 
   // 권한 관련 작업 모두 실행
   Future<bool> init() async {
@@ -113,12 +118,17 @@ class AgoraService {
       await engine!.enableAudio();   // 오디오 기능을 활성화
       await engine!.startPreview();   // 카메라를 이용해 동영상을 화면에 실행
 
-      // 채널에 입장
+      // 실제 전송 직전 값 확인용 로그
+      debugPrint('=== JOINING CHANNEL ===');
+      debugPrint('channelName: "$channelName"');
+      debugPrint('token: "${CHANNEL_TOKENS[channelName]}"');
+
+      // 채널에 입장 (선택한 방 이름에 해당하는 토큰을 자동으로 매칭)
       await engine!.joinChannel(
-        token: TEMP_TOKEN,
-        channelId: CHANNEL_NAME,
+        token: CHANNEL_TOKENS[channelName] ?? '',
+        channelId: channelName,
         uid: 0,
-        options: const ChannelMediaOptions(),   // 영상과 관련된 여러 가지 설정 가능
+        options: const ChannelMediaOptions(),
       );
     }
 

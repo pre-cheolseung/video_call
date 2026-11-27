@@ -4,7 +4,13 @@ import 'package:video_call/services/agora_service.dart';
 import 'package:video_call/widgets/video_views.dart';
 
 class CamScreen extends StatefulWidget {
-  const CamScreen({Key? key}) : super(key: key);   // const 생성자 : 최초 선언 후 변경 불가능한 빌드 타임 함수
+  final String channelName;   // 방 이름
+
+  const CamScreen({
+    super.key,
+
+    required this.channelName,
+  });
 
   @override
   // State<CamScreen> createState() => _CamScreenState();
@@ -24,6 +30,7 @@ class _CamScreenState extends State<CamScreen> {
 
     // 서비스 생성 시 상태 변경 콜백으로 setState 전달
     _agoraService = AgoraService(
+      channelName: widget.channelName,   // 서비스에 방 이름 전달
       onStateChanged: () {
         // 상태 변경 시 setState() 함수 실행
         // 값 변경 시 build() 함수 재실행
@@ -47,9 +54,9 @@ class _CamScreenState extends State<CamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LIVE'),
+        title: Text('LIVE - ${widget.channelName}'),   // 상단 앱바에 현재 입장한 방 이름 표시
         actions: [
-          // 1. 내 마이크 음소거 및 해제 버튼
+          // 내 마이크 음소거 및 해제 버튼
           IconButton(
             onPressed: _agoraService.uid != null
               ? () async {
@@ -120,6 +127,7 @@ class _CamScreenState extends State<CamScreen> {
           // 상대방 화면 위젯 정의
           final Widget remoteView = RemoteVideoView(
             engine: _agoraService.engine!,
+            channelName: widget.channelName,   // 방 이름
             otherUid: _agoraService.otherUid,
             isRemoteAudioMuted: _agoraService.isRemoteAudioMuted,   // 상태 전달
             isRemoteVideoMuted: _agoraService.isRemoteVideoMuted,   // 상태 전달
