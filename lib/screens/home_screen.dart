@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _selectedChannel = CHANNEL_TOKENS.keys.first;   // 기본 선택 방: CHANNEL_TOKENS의 첫 번째 키 ('Room1')
+  String _selectedChannel = CHANNEL_TOKENS.keys.first;   // 기본 선택 방: 지정한 CHANNEL_TOKENS의 첫 번째 키 ('Room1')
 
   @override
   Widget build(BuildContext context) {
